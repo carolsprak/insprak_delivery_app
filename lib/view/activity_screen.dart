@@ -32,7 +32,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   Future<void> _loadActivities() async {
     try {
-      final response = await http.get(Uri.parse('https://insprak-delivery-api-0729615f05f3.herokuapp.com/restaurants'));
+      final response = await http.get(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants'));
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
@@ -183,7 +183,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
   Future<void> _createActivity(Activity activity) async {
     try {
       final response = await http.post(
-        Uri.parse('https://insprak-delivery-api-0729615f05f3.herokuapp.com/restaurants'),
+        Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(activity.toJson()),
       );

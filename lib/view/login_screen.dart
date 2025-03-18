@@ -126,7 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login(GlobalKey<ScaffoldState> globalKey, BuildContext context) async {
-    User user = User(0, "", _username.text, "", _convertToMd5(_password.text));
+    User user = User(0, '', '', '', null, firstName: '',
+        username: _username.text, password:_password.text,email: '', profiles: [] );
     if (formKey.currentState!.validate()) {
       ApiResponse response = await UserController().login(user, formKey);
       if (response != null) {

@@ -35,6 +35,9 @@ class UserController extends StatefulWidget {
 }
 
 class _UserControllerState extends State<UserController> {
+
+  final String apiUrl = 'https://insprak-delivery-api-3-388c3302da22.herokuapp.com';
+
   @override
   Widget build(BuildContext context) {
     return Container();
@@ -53,13 +56,14 @@ class _UserControllerState extends State<UserController> {
       formKey.currentState?.reset();
 
       final response = await http.post(
-        Uri.parse('https://api.exemplo.com/login'),
+        Uri.parse('$apiUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'email': user.email,
+          'username': user.username,
           'password': user.password,
         }),
       );
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -77,10 +81,11 @@ class _UserControllerState extends State<UserController> {
   Future<ApiResponse> _cadastrar(User user, GlobalKey<FormState> formKey) async {
     try {
       final response = await http.post(
-        Uri.parse('https://api.exemplo.com/register'),
+        Uri.parse('$apiUrl/users'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(user.toJson()), // Converte User para JSON
       );
+      print(response.statusCode);
 
       if (response.statusCode == 201) {
         return ApiResponse.ok(msg: "Usuário cadastrado com sucesso!", result: null);

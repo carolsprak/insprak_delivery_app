@@ -47,7 +47,7 @@ class _EventScreenState extends State<EventScreen> {
 
   // Função para buscar atividades da API REST
   Future<void> _fetchActivities() async {
-    final response = await http.get(Uri.parse('https://insprak-delivery-api-0729615f05f3.herokuapp.com/restaurants'));
+    final response = await http.get(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants'));
 
         if (response.statusCode == 200) {
           // Decodificar a resposta JSON em uma lista

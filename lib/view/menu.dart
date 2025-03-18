@@ -12,8 +12,8 @@ class Menu extends StatelessWidget {
 
   Future<Map<String, dynamic>> _getUserData() async {
     // Suponha que sua API retorne os dados do usuário autenticado
-    final response = await http.get(Uri.https('https://insprak-delivery-api-0729615f05f3.herokuapp.com/users'));
-
+    final response = await http.get(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/users'));
+    print(response.body);
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -54,7 +54,7 @@ class Menu extends StatelessWidget {
                   return CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return ListTile(
-                    title: Text('Erro ao carregar dados do usuário'),
+                    title: Text(' '),
                   );
                 } else if (snapshot.hasData) {
                   Map<String, dynamic>? user = snapshot.data;

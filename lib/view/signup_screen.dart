@@ -59,6 +59,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: TextFormField(
                       maxLength: 100,
                       decoration: InputDecoration(
+                          hintText: "Nome de usuário"
+                      ),
+                      controller: _username,
+                      keyboardType: TextInputType.text,
+                      validator: (val) => val == "" ? val : null,
+                    ),
+                  ),
+                  Flexible(
+                    child: TextFormField(
+                      maxLength: 100,
+                      decoration: InputDecoration(
                           hintText: "E-mail"
                       ),
                       controller: _email,
@@ -107,8 +118,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _cadastraUsuario(GlobalKey<ScaffoldState> globalKey) async {
-    User user = User(0, _firstName.text, _username.text, _email.text,
-        _convertToMd5(_password.text));
+    User user = User(0, '', '', '', null, firstName: _firstName.text,
+        username: _username.text, password:_password.text,email: _email.text,
+        profiles: ["Cliente"] );
+
     if (formKey.currentState!.validate()) {
       ApiResponse response = await UserController().adicionarParticipante(
           user, formKey);

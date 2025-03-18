@@ -29,7 +29,7 @@ class ActivityController extends StatefulWidget {
 class _ActivityControllerState extends State<ActivityController> {
 
 
-  final String apiUrl = 'https://insprak-delivery-api-0729615f05f3.herokuapp.com/restaurants'; // Substitua pela sua URL da API
+  final String apiUrl = 'https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants';
 
   @override
   Widget build(BuildContext context) {
