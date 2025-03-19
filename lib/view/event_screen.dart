@@ -7,6 +7,10 @@ import 'package:insprak_delivery_app/model/activity.dart';
 import 'menu.dart'; // Para manipular os dados JSON
 
 class EventScreen extends StatefulWidget {
+  final int userId; // ID do usuário
+
+  EventScreen({required this.userId}); // Construtor
+
   @override
   _EventScreenState createState() => _EventScreenState();
 }
@@ -41,7 +45,7 @@ class _EventScreenState extends State<EventScreen> {
           ],
         ),
       ),
-      drawer: Menu(),
+      drawer: Menu(userId: widget.userId),
     );
   }
 
@@ -91,7 +95,7 @@ class _EventScreenState extends State<EventScreen> {
                     color: Colors.brown),
               ),
               subtitle: Text(
-                  "${atividades[index].description}\n${atividades[index].providerId}"),
+                  "${atividades[index].description}"),
             ),
           ),
         );

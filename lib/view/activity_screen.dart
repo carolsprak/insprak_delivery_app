@@ -8,15 +8,18 @@ import 'package:insprak_delivery_app/model/activity.dart';
 import 'menu.dart';
 
 class ActivityScreen extends StatefulWidget {
+  final int userId; // ID do usuário
+
+  ActivityScreen({required this.userId}); // Construtor
+
   @override
   _ActivityScreenState createState() => _ActivityScreenState();
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
 
-  final TextEditingController _palestra = TextEditingController();
-  final TextEditingController _palestrante = TextEditingController();
-  final TextEditingController _horario = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _description = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final globalKey = GlobalKey<ScaffoldState>();
   List<Address> _address = [];
@@ -27,12 +30,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   void initState() {
     super.initState();
-    _loadActivities();
+    _loadActivitiesByUser();
   }
 
-  Future<void> _loadActivities() async {
+  Future<void> _loadActivitiesByUser() async {
     try {
-      final response = await http.get(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants'));
+      final response = await http.get(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants?providerId=${widget.userId}'));
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
@@ -49,9 +52,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  Future<void> _deleteActivity(String id) async {
+  Future<void> _deleteActivity(int id) async {
     try {
-      final response = await http.delete(Uri.parse('https://sua-api.com/activities/$id'));
+      final response = await http.delete(Uri.parse('https://insprak-delivery-api-3-388c3302da22.herokuapp.com/restaurants/$id'));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -67,7 +70,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  void _showDeleteDialog(String activityId) {
+  void _showDeleteDialog(int activityId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -103,10 +106,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
             child: ListTile(
               leading: Icon( Icons.check),
               title: Text(activity.name),
-              subtitle: Text('${activity.description}\n${activity.providerId}'),
+              subtitle: Text('${activity.description}'),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
-                onPressed: () => _showDeleteDialog(activity.id as String),
+                onPressed: () => _showDeleteDialog(activity.id),
               ),
             ),
           ),
@@ -122,29 +125,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
         key: formKey,
         child: SimpleDialog(
           backgroundColor: Colors.white,
-          title: Text('Carrinho de compras'),
+          title: Text('Dados do restaurante'),
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextFormField(
-                controller: _palestra,
-                decoration: InputDecoration(hintText: 'Restaurante'),
+                controller: _name,
+                decoration: InputDecoration(hintText: 'Nome'),
                 validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextFormField(
-                controller: _palestrante,
-                decoration: InputDecoration(hintText: 'Produto'),
-                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextFormField(
-                controller: _horario,
-                decoration: InputDecoration(hintText: 'Quantidade'),
+                controller: _description,
+                decoration: InputDecoration(hintText: 'Descrição'),
                 validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
               ),
             ),
@@ -160,10 +155,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     if (formKey.currentState!.validate()) {
                       final newActivity = Activity(
                         id: 0,
-                        name: _palestra.text,
-                        description: _palestrante.text,
+                        name: _name.text,
+                        description: _description.text,
                         address: null,
-                        providerId: int.parse(_horario.text),
+                        providerId:  widget.userId,
                         products: _products,
                       );
                       await _createActivity(newActivity);
@@ -190,7 +185,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restaurante cadastrado com sucesso')));
-        _loadActivities();
+        _loadActivitiesByUser();
       } else {
         throw Exception('Falha ao criar restaurante');
       }
@@ -205,7 +200,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("CARRINHO", style: TextStyle(color: Colors.white)),
+        title: Text("Cadastrar Restaurantes", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.brown[400],
       ),
       body: _buildActivityList(),
@@ -214,7 +209,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         backgroundColor: Colors.brown[400],
         onPressed: _addActivity,
       ),
-      drawer: Menu(),
+      drawer: Menu(userId: widget.userId),
     );
   }
 }

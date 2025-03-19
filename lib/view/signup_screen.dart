@@ -13,7 +13,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _firstName = new TextEditingController();
+  final TextEditingController _name = new TextEditingController();
   final TextEditingController _username = new TextEditingController();
   final TextEditingController _email = new TextEditingController();
   final TextEditingController _password = new TextEditingController();
@@ -70,9 +70,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         maxLength: 100,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                            hintText: "Nome"
+                            hintText: "Nome Completo"
                         ),
-                        controller: _firstName,
+                        controller: _name,
                         keyboardType: TextInputType.text,
                         validator: (val) => val == "" ? val : null,
                       ),
@@ -82,7 +82,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         maxLength: 100,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                            hintText: "Nome de usuário"
+                            hintText: "Usuário"
                         ),
                         controller: _username,
                         keyboardType: TextInputType.text,
@@ -186,8 +186,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     List<String> profiles = getSelectedOptions();
     print(profiles); // Mostra no console os itens marcados
 
-    User user = User(0, '', '', '', null, firstName: _firstName.text,
-        username: _username.text, password:_password.text,email: _email.text,
+    User user = User(firstName: _firstName(_name.text),
+        lastName: _lastName(_name.text),
+        username: _username.text,
+        password:_password.text,
+        email: _email.text,
         profiles: profiles );
 
     if (formKey.currentState!.validate()) {
@@ -208,6 +211,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   String _convertToMd5(String text) {
     return md5.convert(utf8.encode(text)).toString();
+  }
+
+  String _firstName(String text) {
+    List<String> parts = text.trim().split(" ");
+    return parts.isNotEmpty ? parts[0] : "";
+  }
+
+  String _lastName(String text) {
+    List<String> parts = text.trim().split(" ");
+    return parts.length > 1 ? parts.sublist(1).join(" ") : "";
   }
 
   List<String> getSelectedOptions() {

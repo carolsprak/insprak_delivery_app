@@ -1,42 +1,42 @@
 class User {
-  final int id;
+  final int? id;
   final String firstName;
-  final String lastName;
+  final String? lastName;
   final String username;
   final String password;
   final String email;
-  final String cpfCnpj;
-  final String birthDate;
+  final String? cpfCnpj;
+  final String? birthDate;
   final List<String> profiles;
   final Address? address;
 
-  User(this.id, this.lastName, this.cpfCnpj, this.birthDate, this.address,
-      { required this.firstName, required this.username, 
-  required this.password, required this.email,
-    required this.profiles});
+  User({ this.id, required this.firstName, this.lastName,
+        required this.username, required this.password, required this.email,
+        this.cpfCnpj, this.birthDate,
+        required this.profiles, this.address});
 
   // Construtor para criar um objeto User a partir de um JSON
   factory User.fromJson(Map<String, dynamic> json) {
     var addressJson = json['address'];
 
     return User(
-      json['id'] ?? 0,
+      id: json['id'],
       firstName: json['firstName'] ?? '',
-      json['lastName'] ?? '',
+      lastName: json['lastName'] ?? '',
       username: json['username'] ?? '',
       password: json['password'] ?? '',
       email: json['email'] ?? '',
-      json['cpfCnpj'] ?? '',
-      json['birthDate'] ?? '',
+      cpfCnpj: json['cpfCnpj'] ?? '',
+      birthDate: json['birthDate'] ?? '',
       profiles: json['profiles'] ?? ["Cliente"],
-      addressJson != null ? Address.fromJson(addressJson) : null,
+      address: addressJson != null ? Address.fromJson(addressJson) : null,
     );
   }
 
   // Converte o objeto User para um JSON (útil para envio via API)
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+       if (id != null) 'id': id,
       'firstName': firstName,
       'lastName': lastName,
       'username': username,

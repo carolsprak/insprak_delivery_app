@@ -13,6 +13,10 @@ class ActivityController extends StatefulWidget {
     return createState()._getAllActivities(table);
   }
 
+  Future<List<Activity>> getActivityByUser(String table, value) async {
+    return createState()._getActivityByUser(table, value);
+  }
+
   void addActivity(String table, Object data) async {
     await createState()._addActivity(table, data);
   }
@@ -47,12 +51,32 @@ class _ActivityControllerState extends State<ActivityController> {
             .toList();
         return atividades;
       } else {
-        throw Exception('Falha ao carregar restaurantes');
+        throw Exception('Falha ao carregar restaurantes ${response.body}');
       }
     } catch (e) {
       throw Exception('Erro ao buscar restaurantes: $e');
     }
   }
+
+  // Método para pegar uma as atividade via API REST
+  Future<List<Activity>> _getActivityByUser(String table, String value) async {
+    String providerId = value;
+    try {
+      final response = await http.get(Uri.parse(apiUrl + '?providerId=$providerId'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        List<Activity> atividades = data
+            .map((item) => Activity.fromJson(item))
+            .toList();
+        return atividades;
+      } else {
+        throw Exception('Falha ao carregar restaurantes ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar restaurantes: $e');
+    }
+  }
+
 
   // Método para adicionar atividade via API REST
   Future<void> _addActivity(String table, Object data) async {
@@ -65,7 +89,7 @@ class _ActivityControllerState extends State<ActivityController> {
       if (response.statusCode == 201) {
         // A atividade foi criada com sucesso
       } else {
-        throw Exception('Erro ao adicionar restaurante');
+        throw Exception('Erro ao adicionar restaurante ${response.body}');
       }
     } catch (e) {
       throw Exception('Erro ao adicionar restaurante: $e');
@@ -81,7 +105,7 @@ class _ActivityControllerState extends State<ActivityController> {
         body: json.encode(data.toJson()),
       );
       if (response.statusCode != 200) {
-        throw Exception('Erro ao atualizar restaurante');
+        throw Exception('Erro ao atualizar restaurante ${response.body}');
       }
     } catch (e) {
       throw Exception('Erro ao atualizar restaurante: $e');

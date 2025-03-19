@@ -21,6 +21,10 @@ class UserController extends StatefulWidget {
   @override
   _UserControllerState createState() => _UserControllerState();
 
+  Future<List<User>> getUser(String table, String id) {
+    return _UserControllerState()._getUser(table, id);
+  }
+
   Future<ApiResponse> adicionarParticipante(User user, GlobalKey<FormState> formKey) {
     return _UserControllerState()._cadastrar(user, formKey);
   }
@@ -73,7 +77,25 @@ class _UserControllerState extends State<UserController> {
       }
     } catch (error) {
       print("Erro na API: $error");
-      return ApiResponse.error(msg: "Erro ao conectar-se ao servidor.", result: null);
+      return ApiResponse.error(msg: "Erro ao conectar-se ao servidor. $error", result: null);
+    }
+  }
+
+  // Método para recuperar atividade via API REST
+  Future<List<User>> _getUser(String table, String id) async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/$id'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        List<User> users = data
+            .map((item) => User.fromJson(item))
+            .toList();
+        return users;
+      } else {
+        throw Exception('Erro ao recuperar o usuário');
+      }
+    } catch (e) {
+      throw Exception('Erro ao recuperar o usuário: $e');
     }
   }
 
@@ -96,7 +118,7 @@ class _UserControllerState extends State<UserController> {
       }
     } catch (error) {
       print("Erro na API: $error");
-      return ApiResponse.error(msg: "Não foi possível cadastrar o usuário.", result: null);
+      return ApiResponse.error(msg: "Não foi possível cadastrar o usuário. $error", result: null);
     }
   }
 }

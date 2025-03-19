@@ -142,16 +142,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login(GlobalKey<ScaffoldState> globalKey, BuildContext context) async {
-    User user = User(0, '', '', '', null, firstName: '',
-        username: _username.text, password:_password.text,email: '', profiles: [] );
+    User user = User(firstName: '', username: _username.text,
+        password:_password.text, email: '', profiles: [] );
     if (formKey.currentState!.validate()) {
       ApiResponse response = await UserController().login(user, formKey);
       if (response != null) {
+        int userId = response.result['userId'];
+
+        print(response.result['userId']);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response.msg)),
         );
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => EventScreen()),
+          MaterialPageRoute(builder: (context) => EventScreen(userId: userId)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
