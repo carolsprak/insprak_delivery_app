@@ -16,10 +16,6 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
-tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
-
 plugins {
     id("org.gradle.kotlin.kotlin-dsl") version "4.5.0" // Teste uma versão mais estável
 }

@@ -44,8 +44,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   Flexible(
                       flex: 1,
                       child: Center(
-                          child: Image.asset("assets/images/logo.png",
-                              width: 150.0, height: 150.0))),
+                          child: Container(
+                            width: 150, // Largura do container
+                            height: 150, // Altura do container
+                            decoration: BoxDecoration(
+                              border: Border.all( // Define a borda
+                                color: Colors.transparent, // Cor da borda
+                                width: 3, // Largura da borda
+                              ),
+                              borderRadius: BorderRadius.circular(12), // Borda arredondada
+                            ),
+                            child: ClipRRect( // Garante que a imagem respeite o arredondamento
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                "assets/images/logo.png",
+                                fit: BoxFit.cover, // Ajusta a imagem dentro do container
+                              ),
+                            ),
+                          ))),
                   Flexible(
                     child: TextFormField(
                       maxLength: 100,
