@@ -48,7 +48,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       }
     } catch (error) {
       debugPrint(error.toString());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao carregar restaurante')));
+      popMsg(context, "Erro ao carregar restaurante");
     }
   }
 
@@ -60,13 +60,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
         setState(() {
           atividades.removeWhere((activity) => activity.id == id);
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restaurante removido com sucesso')));
+        popMsg(context, "Restaurante removido com sucesso");
       } else {
         throw Exception('Falha ao excluir o restaurante');
       }
     } catch (error) {
       debugPrint(error.toString());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao remover restaurante')));
+      popMsg(context, "Erro ao remover restaurante");
     }
   }
 
@@ -184,15 +184,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
       );
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Restaurante cadastrado com sucesso')));
+        popMsg(context, "Restaurante cadastrado com sucesso");
         _loadActivitiesByUser();
       } else {
         throw Exception('Falha ao criar restaurante');
       }
     } catch (error) {
       debugPrint(error.toString());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao cadastrar restaurante')));
+      popMsg(context, "Erro ao cadastrar restaurante");
     }
+  }
+
+  void popMsg(BuildContext context, String msg) {
+    final snackBar = SnackBar(
+        content: Text(msg));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override

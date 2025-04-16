@@ -29,142 +29,141 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       key: globalKey,
       appBar: AppBar(
-        title: Text("Insprak Delivery", style: TextStyle(color: Colors.white),),
+        title: Text("Insprak Delivery", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.brown[400],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Container(
-            color: Colors.white,
-            child: Form(
-              key: formKey,
-              child: Column(
-                children: <Widget>[
-                  Flexible(
-                      flex: 1,
-                      child: Center(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        SizedBox(height: 20),
+                        Center(
                           child: Container(
-                            width: 150, // Largura do container
-                            height: 150, // Altura do container
-                            decoration: BoxDecoration(
-                              border: Border.all( // Define a borda
-                                color: Colors.transparent, // Cor da borda
-                                width: 3, // Largura da borda
-                              ),
-                              borderRadius: BorderRadius.circular(12), // Borda arredondada
-                            ),
-                            child: ClipRRect( // Garante que a imagem respeite o arredondamento
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            height: MediaQuery.of(context).size.width * 0.4,
+                            child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.asset(
                                 "assets/images/logo.png",
-                                fit: BoxFit.cover, // Ajusta a imagem dentro do container
+                                fit: BoxFit.contain,
                               ),
-                            ),
-                          ))),
-                  Flexible(
-                    child: TextFormField(
-                      maxLength: 100,
-                      decoration: InputDecoration(
-                          hintText: "Username"
-                      ),
-                      controller: _username,
-                      keyboardType: TextInputType.text,
-                      validator: (val) => val == "" ? val : null,
-                    ),
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      obscureText: true,
-                      maxLength: 20,
-                      decoration: InputDecoration(
-                          hintText: "Senha"
-                      ),
-                      controller: _password,
-                      keyboardType: TextInputType.text,
-                      validator: (val) => val == "" ? val : null,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Alinhamento dos botões
-                    children: <Widget>[
-                      Flexible(
-                        child: TextButton(
-
-                          child: Text("Entrar"),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            // Cor do texto
-                            backgroundColor: Colors.brown[400],
-                            // Cor do botão
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 20),
-                            // Espaçamento interno
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  8), // Cantos arredondados
                             ),
                           ),
-                          onPressed: () {
-                            _login(globalKey, context);
-                          },
                         ),
-                      ),
-                      Flexible(
-                          child: TextButton(
-                            child: Text("Cadastro"),
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              // Cor do texto
-                              backgroundColor: Colors.brown[400],
-                              // Cor do botão
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 20),
-                              // Espaçamento interno
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    8), // Cantos arredondados
+                        SizedBox(height: 30),
+                        TextFormField(
+                          maxLength: 100,
+                          decoration: InputDecoration(hintText: "Nome de usuário"),
+                          controller: _username,
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val == null || val.isEmpty ? "Campo obrigatório" : null,
+                        ),
+                        SizedBox(height: 10),
+                        TextFormField(
+                          obscureText: true,
+                          maxLength: 20,
+                          decoration: InputDecoration(hintText: "Senha"),
+                          controller: _password,
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val == null || val.isEmpty ? "Campo obrigatório" : null,
+                        ),
+                        SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Expanded(
+                              child: TextButton(
+                                child: Text("Entrar"),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.brown[400],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _login(context);
+                                },
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder:
-                                  (BuildContext context) => SignUpScreen()));
-                            },)
-                      ),
-                    ]
-                  )
-                ],),
-            ),
-          ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: TextButton(
+                                child: Text("Cadastrar"),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.brown[400],
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => SignUpScreen()));
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  void _login(GlobalKey<ScaffoldState> globalKey, BuildContext context) async {
-    User user = User(firstName: '', username: _username.text,
-        password:_password.text, email: '', profiles: [] );
+
+  void _login( BuildContext context) async {
+    User user = User(
+        firstName: '',
+        username: _username.text,
+        password:_password.text,
+        email: '',
+        profiles: []
+    );
+
     if (formKey.currentState!.validate()) {
       ApiResponse response = await UserController().login(user, formKey);
-      if (response != null) {
+      if (response != null && response.ok) {
         int userId = response.result['userId'];
 
         print(response.result['userId']);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.msg)),
-        );
+        popMsg(context, response.msg);
+
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => EventScreen(userId: userId)),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Não foi possível realizar o login.")),
-        );
+        popMsg(context, response.msg ?? "Não foi possível realizar o login.");
+
       }
     }
   }
 
   String _convertToMd5(String text) {
     return md5.convert(utf8.encode(text)).toString();
+  }
+
+  void popMsg(BuildContext context, String msg) {
+    final snackBar = SnackBar(
+        content: Text(msg));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

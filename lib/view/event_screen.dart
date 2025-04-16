@@ -102,4 +102,10 @@ class _EventScreenState extends State<EventScreen> {
       },
     );
   }
+
+  void popMsg(BuildContext context, String msg) {
+    final snackBar = SnackBar(
+        content: Text(msg));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }

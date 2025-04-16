@@ -3,9 +3,11 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../controller/user_controller.dart';
 import '../model/user.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -18,6 +20,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _email = new TextEditingController();
   final TextEditingController _password = new TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController _cpf = new TextEditingController();
+  final TextEditingController _datanascimento = new TextEditingController();
+  final cpfMaskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+  final dataNascimentoFormatter = MaskTextInputFormatter(
+    mask: '##/##/####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
   bool cliente = false;
   bool prestador = false;
   bool entregador = false;
@@ -74,7 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         controller: _name,
                         keyboardType: TextInputType.text,
-                        validator: (val) => val == "" ? val : null,
+                        validator: (val) => val == null || val.isEmpty ? "Campo obrigatório" : null,
                       ),
                     ),
                     Flexible(
@@ -86,7 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         controller: _username,
                         keyboardType: TextInputType.text,
-                        validator: (val) => val == "" ? val : null,
+                        validator: (val) => val == null || val.isEmpty ? "Campo obrigatório" : null,
                       ),
                     ),
                     Flexible(
@@ -98,7 +110,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         controller: _email,
                         keyboardType: TextInputType.text,
-                        validator: (val) => val == "" ? val : null,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+                          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(val)) {
+                            return 'E-mail inválido';
+                          }
+                          return null;
+                        }
                       ),
                     ),
                     Flexible(
@@ -110,7 +131,80 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             hintText: "Senha"),
                         controller: _password,
                         keyboardType: TextInputType.text,
-                        validator: (val) => val == "" ? val : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+                          if (value.length < 6) {
+                            return 'Senha deve ter no mínimo 6 caracteres';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        maxLength: 100,
+                        decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            hintText: "CPF"
+                        ),
+                        controller: _cpf,
+                        inputFormatters: [cpfMaskFormatter],
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+
+                          if (!isValidCPF(value)) {
+                            return 'CPF inválido';
+                          }
+
+                          return null;
+                        },
+                      ),
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        maxLength: 100,
+                        decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            hintText: "Data de nascimento"
+                        ),
+                        controller: _datanascimento,
+                        inputFormatters: [dataNascimentoFormatter],
+                        keyboardType: TextInputType.datetime,
+                        validator:  (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+
+                          final dateRegex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
+                          if (!dateRegex.hasMatch(value)) {
+                            return 'Formato inválido (dd/mm/aaaa)';
+                          }
+
+                          try {
+                            final parts = value.split('/');
+                            final day = int.parse(parts[0]);
+                            final month = int.parse(parts[1]);
+                            final year = int.parse(parts[2]);
+                            final date = DateTime(year, month, day);
+                            final hoje = DateTime.now();
+
+                            if (date.isAfter(hoje)) {
+                              return 'Data no futuro não é válida';
+                            }
+                            if (date.year < 1900) {
+                              return 'Ano muito antigo';
+                            }
+                          } catch (_) {
+                            return 'Data inválida';
+                          }
+
+                          return null;
+                        },
                       ),
                     ),
                     Flexible(
@@ -191,23 +285,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
         username: _username.text,
         password:_password.text,
         email: _email.text,
+        cpfCnpj: _cpf.text,
+        birthDate: _datanascimento.text,
         profiles: profiles );
 
-    if (formKey.currentState!.validate()) {
-      ApiResponse response = await UserController().adicionarParticipante(
-          user, formKey);
-      if (response != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.msg)),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Não foi possível cadastrar usuário.")),
-        );
+
+      if (formKey.currentState!.validate()) {
+        if (profiles.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Selecione ao menos um perfil.')),
+          );
+          return;
+        }
+        ApiResponse response = await UserController().adicionarParticipante(
+            user, formKey);
+        if (response != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response.msg)),
+          );
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Não foi possível cadastrar usuário.")),
+          );
+        }
       }
     }
 
-  }
+
 
   String _convertToMd5(String text) {
     return md5.convert(utf8.encode(text)).toString();
@@ -232,4 +339,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return selectedOptions;
   }
+
+  bool isValidCPF(String cpf) {
+    // Remove pontos e traços
+    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // Verifica se tem 11 dígitos ou se todos são iguais
+    if (cpf.length != 11 || RegExp(r'^(\d)\1{10}$').hasMatch(cpf)) {
+      return false;
+    }
+
+    // Cálculo do primeiro dígito verificador
+    int sum = 0;
+    for (int i = 0; i < 9; i++) {
+      sum += int.parse(cpf[i]) * (10 - i);
+    }
+    int firstDigit = (sum * 10) % 11;
+    if (firstDigit == 10) firstDigit = 0;
+    if (firstDigit != int.parse(cpf[9])) return false;
+
+    // Cálculo do segundo dígito verificador
+    sum = 0;
+    for (int i = 0; i < 10; i++) {
+      sum += int.parse(cpf[i]) * (11 - i);
+    }
+    int secondDigit = (sum * 10) % 11;
+    if (secondDigit == 10) secondDigit = 0;
+    if (secondDigit != int.parse(cpf[10])) return false;
+
+    return true;
+  }
+
+
 }
